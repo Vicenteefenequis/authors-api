@@ -1,11 +1,11 @@
-from .base import * #noqa
+from .base import *  # noqa
 from .base import env
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
-    default="4SDHRhTfbVAipwc_A9hDPIM7jBZcrEuTN4AfuNgFXa_yzfKrEvc",
+    default="RWQbBfOERt6JaOQsyek49VkoeyWBpvoHuo9q7hKrDqMbRsettCk",
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
