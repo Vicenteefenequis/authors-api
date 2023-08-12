@@ -3,3 +3,4 @@ POSTGRES_PORT=5432
 POSTGRES_DB=ms-green
 POSTGRES_USER=vicente
 POSTGRES_PASSWORD=vicente
+DATABASE_URL=postgres://vicente:vicente@postgres:5432/ms-green
