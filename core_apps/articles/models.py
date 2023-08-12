@@ -1,18 +1,18 @@
 from autoslug import AutoSlugField
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from taggit.managers import TaggableManager
 
 from core_apps.common.models import TimeStampedModel
+
 from .read_time_engine import ArticleReadTimeEngine
 
 User = get_user_model()
 
 
 class Clap(TimeStampedModel):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="claps")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="claps")
 
     article = models.ForeignKey("Article", on_delete=models.CASCADE)
 
@@ -25,22 +25,18 @@ class Clap(TimeStampedModel):
 
 
 class Article(TimeStampedModel):
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="articles"
-    )
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="articles")
     title = models.CharField(verbose_name=_("Title"), max_length=255)
-    slug = AutoSlugField(populate_from="title",
-                         always_update=True, unique=True)
-    description = models.CharField(
-        verbose_name=_("description"), max_length=255)
+    slug = AutoSlugField(populate_from="title", always_update=True, unique=True)
+    description = models.CharField(verbose_name=_("description"), max_length=255)
     body = models.TextField(verbose_name=_("article content"))
-    banner_image = models.ImageField(verbose_name=_(
-        "banner image"), default="/profile_default.png")
+    banner_image = models.ImageField(
+        verbose_name=_("banner image"), default="/profile_default.png"
+    )
 
     tags = TaggableManager()
 
-    claps = models.ManyToManyField(
-        User, through=Clap, related_name="clapped_articles")
+    claps = models.ManyToManyField(User, through=Clap, related_name="clapped_articles")
 
     def __str__(self) -> str:
         return f"{self.author.first_name}'s article"
@@ -63,7 +59,8 @@ class Article(TimeStampedModel):
 
 class ArticleView(TimeStampedModel):
     article = models.ForeignKey(
-        Article, on_delete=models.CASCADE, related_name="article_views")
+        Article, on_delete=models.CASCADE, related_name="article_views"
+    )
 
     user = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, related_name="user_views"
@@ -84,5 +81,6 @@ class ArticleView(TimeStampedModel):
     @classmethod
     def record_view(cls, article, user, viewer_ip):
         view, _ = cls.objects.get_or_create(
-            article=article, user=user, viewer_ip=viewer_ip)
+            article=article, user=user, viewer_ip=viewer_ip
+        )
         view.save()

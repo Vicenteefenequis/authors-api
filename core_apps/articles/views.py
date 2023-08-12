@@ -1,20 +1,21 @@
 import logging
+
+from django.contrib.auth import get_user_model
+from django.core.files.storage import default_storage
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from rest_framework import filters, generics, permissions, status
 from django_filters.rest_framework import DjangoFilterBackend
-from django.contrib.auth import get_user_model
+from rest_framework import filters, generics, permissions, status
+from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.response import Response
 
 from core_apps.articles.serializers import ArticleSerializer, ClapSerializer
-from .models import Article, ArticleView, Clap
-from .filters import ArticleFilter
-from .pagination import ArticlePagination
-from .renderers import ArticleJSONRenderer, ArticlesJSONRenderer
-from .permissions import IsOwnerOrReadOnly
-from django.core.files.storage import default_storage
-from rest_framework.parsers import MultiPartParser, FormParser
 
+from .filters import ArticleFilter
+from .models import Article, ArticleView, Clap
+from .pagination import ArticlePagination
+from .permissions import IsOwnerOrReadOnly
+from .renderers import ArticleJSONRenderer, ArticlesJSONRenderer
 
 User = get_user_model()
 
@@ -26,11 +27,12 @@ class ArticleListCreateView(generics.ListCreateAPIView):
     serializer_class = ArticleSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = ArticlePagination
-    filter_backends = (
-        DjangoFilterBackend, filters.OrderingFilter
-    )
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = ArticleFilter
-    ordering_fields = ["created_at", "updated_at",]
+    ordering_fields = [
+        "created_at",
+        "updated_at",
+    ]
     renderer_classes = [ArticlesJSONRenderer]
 
     def perform_create(self, serializer):
@@ -51,7 +53,10 @@ class ArticleRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         isinstance = serializer.save(author=self.request.user)
         if "banner_image" in self.request.FILES:
-            if (isinstance.banner_image and isinstance.banner_image.name != "/profile_default.png"):
+            if (
+                isinstance.banner_image
+                and isinstance.banner_image.name != "/profile_default.png"
+            ):
                 default_storage.delete(isinstance.banner_image.path)
             isinstance.banner_image = self.request.FILES["banner_image"]
             isinstance.save()
@@ -83,15 +88,21 @@ class ClapArticleView(generics.CreateAPIView, generics.DestroyAPIView):
         article = get_object_or_404(Article, id=article_id)
 
         if Clap.objects.filter(user=user, article=article).exists():
-            return Response({
-                "detail": "You have already clapped for this article",
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "detail": "You have already clapped for this article",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         clap = Clap.objects.create(user=user, article=article)
         clap.save()
 
-        return Response({
-            "detail": "Clap added to article",
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "detail": "Clap added to article",
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
     def delete(self, request, *args, **kwargs):
         user = request.user
@@ -102,6 +113,9 @@ class ClapArticleView(generics.CreateAPIView, generics.DestroyAPIView):
 
         clap.delete()
 
-        return Response({
-            "detail": "Clap removed from article",
-        }, status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {
+                "detail": "Clap removed from article",
+            },
+            status=status.HTTP_204_NO_CONTENT,
+        )

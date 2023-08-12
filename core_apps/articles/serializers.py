@@ -1,8 +1,9 @@
 from rest_framework import serializers
+
 from core_apps.articles.models import Article, ArticleView, Clap
-from core_apps.profiles.serializers import ProfileSerializer
 from core_apps.bookmarks.models import Bookmark
 from core_apps.bookmarks.serializers import BookmarkSerializer
+from core_apps.profiles.serializers import ProfileSerializer
 from core_apps.responses.serializers import ResponseSerializer
 
 
@@ -37,8 +38,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     bookmarks_count = serializers.SerializerMethodField()
     claps_count = serializers.SerializerMethodField()
     responses = ResponseSerializer(many=True, read_only=True)
-    responses_count = serializers.IntegerField(
-        source="responses.count", read_only=True)
+    responses_count = serializers.IntegerField(source="responses.count", read_only=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
@@ -83,13 +83,12 @@ class ArticleSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.author = validated_data.get("author", instance.author)
         instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description)
+        instance.description = validated_data.get("description", instance.description)
         instance.body = validated_data.get("body", instance.body)
         instance.banner_image = validated_data.get(
-            "banner_image", instance.banner_image)
-        instance.updated_at = validated_data.get(
-            "updated_at", instance.updated_at)
+            "banner_image", instance.banner_image
+        )
+        instance.updated_at = validated_data.get("updated_at", instance.updated_at)
 
         if "tags" in validated_data:
             instance.tags.set(validated_data["tags"])
@@ -122,10 +121,8 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class ClapSerializer(serializers.ModelSerializer):
-    article_title = serializers.CharField(
-        source="article.title", read_only=True)
-    user_first_name = serializers.CharField(
-        source="user.first_name", read_only=True)
+    article_title = serializers.CharField(source="article.title", read_only=True)
+    user_first_name = serializers.CharField(source="user.first_name", read_only=True)
 
     class Meta:
         model = Clap

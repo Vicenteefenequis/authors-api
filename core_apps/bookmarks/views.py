@@ -55,6 +55,5 @@ class BookmarkDestroyView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         user = self.request.user
         if instance.user != user:
-            raise ValidationError(
-                "You cannot delete a bookmark that is not yours")
+            raise ValidationError("You cannot delete a bookmark that is not yours")
         instance.delete()
