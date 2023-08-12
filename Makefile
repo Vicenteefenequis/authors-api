@@ -34,7 +34,7 @@ volume:
 green-db:
 	docker compose -f local.yml exec postgres psql --username=vicente --dbname=ms-green 
 
-flakes8:
+flake8:
 	docker compose -f local.yml exec api flake8 .
 
 black-check:
